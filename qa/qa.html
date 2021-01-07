@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Awesome Go Interview Questions and Answers</title>
+    <meta content="Go, Golang, Quiz, Interview questions, Awesome" name=description> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/qa/assets/style.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/qa/assets/bs.js"></script>
+    <script src="/qa/assets/script.js"></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+    <div class="bs-docs-header" id="content" tabindex="-1">
+        <div class="container">
+        </div>
+    </div>
+    <div class="container bs-docs-container">
+        <div class=row>
+            <div class=col-md-9 role=main>
+                <div class=bs-docs-section>
+                    <h1 class=page-header id=lang-spec>Go语言基础</h1>
+                    
+        
+                    <h2 id=subslice-grow>Subslice</h2>
+
+                    <div class="bs-example gq-question">
+                        以下代码的运行结果是什么?
+                    </div>
+
+                    
+                    <figure class="highlight editable">
+                        <textarea rows="15">
+package main
+
+import (
+	&#34;fmt&#34;
+)
+
+func main() {
+	s := []int{1, 2, 3}
+	ss := s[1:]
+	ss = append(ss, 4)
+
+	for _, v := range ss {
+		v &#43;= 10
+	}
+
+	for i := range ss {
+		ss[i] &#43;= 10
+	}
+
+	fmt.Println(s)
+}
+
+                        </textarea>
+                    </figure>
+                    <button type="button" class="btn btn-primary gq-run-btn">Run</button>
+                    
+
+                    
+
+                    
+
+                    
+        
+                    <h2 id=short-declairation>短声明</h2>
+
+                    <div class="bs-example gq-question">
+                        如果声明了x而没声明y, 下面哪一种情况是正确的?
+                    </div>
+
+                    
+
+                    
+                    <figure class=highlight>
+                        <pre><code class=language-html data-lang=go>
+x, _ := f()
+x, _ = f()
+x, y := f()
+x, y = f()
+                        </code></pre>
+                    </figure>
+                    
+
+                    
+                    <button type="button" class="btn btn-info gq-anwser-btn">Answer</button>
+                    <figure class="highlight gq-anwser">
+                        <pre><code class=language-html data-lang=go>
+x, _ := f() //incorrect
+x, _ = f() //correct
+x, y := f() //correct
+x, y = f() //incorrect
+                            </code></pre>
+                    </figure>
+                    
+
+                    
+        
+                    <h2 id=interface-nil>Nil Interfaces</h2>
+
+                    <div class="bs-example gq-question">
+                        请写出下面程序的输出内容?
+并解释 `println(InitType() == nil)` 为何编译不通过?
+                    </div>
+
+                    
+                    <figure class="highlight editable">
+                        <textarea rows="15">
+package main
+
+type S struct{}
+
+func (s S) F() {}
+
+type IF interface {
+	F()
+}
+
+func InitType() S {
+	var s S
+	return s
+}
+
+func InitPointer() *S {
+	var s *S
+	return s
+}
+func InitEfaceType() interface{} {
+	var s S
+	return s
+}
+
+func InitEfacePointer() interface{} {
+	var s *S
+	return s
+}
+
+func InitIfaceType() IF {
+	var s S
+	return s
+}
+
+func InitIfacePointer() IF {
+	var s *S
+	return s
+}
+
+func main() {
+	//println(InitType() == nil)
+	println(InitPointer() == nil)
+	println(InitEfaceType() == nil)
+	println(InitEfacePointer() == nil)
+	println(InitIfaceType() == nil)
+	println(InitIfacePointer() == nil)
+}
+
+                        </textarea>
+                    </figure>
+                    <button type="button" class="btn btn-primary gq-run-btn">Run</button>
+                    
+
+                    
+
+                    
+
+                    
+                </div><div class=bs-docs-section>
+                    <h1 class=page-header id=internals>Go高级编程</h1>
+                    
+        
+                    <h2 id=returncopy>一个Go函数返回值的拷贝问题</h2>
+
+                    <div class="bs-example gq-question">
+                        简单分析一下现在mr1和rr1内存分配情况，并把rr1和mr1的地址打印出来
+                    </div>
+
+                    
+                    <figure class="highlight editable">
+                        <textarea rows="15">
+package main
+
+import (
+	&#34;fmt&#34;
+)
+
+type mnode struct {
+	name string
+	id   int
+}
+
+func r1() (rr1 []mnode) {
+	rr1 = append(rr1, mnode{&#34;h1&#34;, 1})
+	rr1 = append(rr1, mnode{&#34;h2&#34;, 2})
+	fmt.Printf(&#34;ptr-rr1: %p \n&#34;, &amp;rr1)
+	fmt.Printf(&#34;ptr-rr1[1]: %p \n&#34;, &amp;(rr1[1]))
+
+	return
+}
+
+func main() {
+	mr1 := r1()
+	fmt.Println(&#34;---------&#34;)
+	fmt.Printf(&#34;ptr-mr1: %p \n&#34;, &amp;mr1)
+	fmt.Printf(&#34;ptr-mr1[1]: %p \n&#34;, &amp;(mr1[1]))
+}
+                        </textarea>
+                    </figure>
+                    <button type="button" class="btn btn-primary gq-run-btn">Run</button>
+                    
+
+                    
+
+                    
+                    <button type="button" class="btn btn-info gq-anwser-btn">Answer</button>
+                    <figure class="highlight gq-anwser">
+                        <pre><code class=language-html data-lang=go>
+slice其实是一个包含指向数字指针的结构体，此处数组本身数据分配在堆上。所以ptr-rr1[1]和ptr-mr1[1]其实是一个值。
+                            </code></pre>
+                    </figure>
+                    
+
+                    
+                </div><div class=bs-docs-section>
+                    <h1 class=page-header id=toolchain>Go开发环境</h1>
+                    
+        
+                    <h2 id=gcflags>gcflags</h2>
+
+                    <div class="bs-example gq-question">
+                        解释如下几个gcflags的参数
+                    </div>
+
+                    
+
+                    
+                    <figure class=highlight>
+                        <pre><code class=language-html data-lang=go>
+-l:
+-m:
+-N:
+                        </code></pre>
+                    </figure>
+                    
+
+                    
+                    <button type="button" class="btn btn-info gq-anwser-btn">Answer</button>
+                    <figure class="highlight gq-anwser">
+                        <pre><code class=language-html data-lang=go>
+-l:禁止内联函数
+-m:显示内联函数的逃逸分析(escape analysis)
+-N:禁止优化
+                            </code></pre>
+                    </figure>
+                    
+
+                    
+                </div>
+
+                <div class=bs-docs-section>
+                </div>
+
+            </div>
+
+            <div class=col-md-3 role=complementary>
+                <nav class="bs-docs-sidebar hidden-print hidden-sm hidden-xs">
+                    <ul class="nav bs-docs-sidenav">
+                        <li>
+                            <a href=#lang-spec>Go语言基础</a>
+                            <ul class=nav>
+                                <li>
+                                    <a href=#subslice-grow>Subslice</a>
+                                </li><li>
+                                    <a href=#short-declairation>短声明</a>
+                                </li><li>
+                                    <a href=#interface-nil>Nil Interfaces</a>
+                                </li>
+                            </ul>
+                        </li><li>
+                            <a href=#internals>Go高级编程</a>
+                            <ul class=nav>
+                                <li>
+                                    <a href=#returncopy>一个Go函数返回值的拷贝问题</a>
+                                </li>
+                            </ul>
+                        </li><li>
+                            <a href=#toolchain>Go开发环境</a>
+                            <ul class=nav>
+                                <li>
+                                    <a href=#gcflags>gcflags</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <a href=#top class=back-to-top> 回到顶部 </a>
+                </nav>
+            </div>
+            
+        </div>
+    </div>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+</body>
