@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                XCMS源码浅析 | 自由编程
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            
+<link rel="stylesheet" href="/css/highlight.light.css">
+
+            
+<link rel="stylesheet" href="/css/prism-customize.css">
+
+            
+<link rel="stylesheet" href="/css/nav-icon.css">
+
+            
+<link rel="stylesheet" href="/css/waves.min.css">
+
+            
+<link rel="stylesheet" href="/css/jquery.tocify.css">
+
+            
+<link rel="stylesheet" href="/css/main.css">
+
+            
+<link rel="stylesheet" href="/css/nav-indicator.css">
+
+            
+  
+  <!-- 百度统计 -->
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?5bed5d7a1333b2102952ec0bf44542d4";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+  
+
+  
+            </meta>
+        </meta>
+    <meta name="generator" content="Hexo 4.2.1"></head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    自由编程
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                文章列表
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/xcms">
+                                XCMS
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/qa">
+                                问答
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+            <h1>
+                XCMS源码浅析 
+            </h1>
+            <small>2020/1/22</small>
+            <p>conf/app.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">appname &#x3D; xcms</span><br><span class="line">httpport &#x3D; 8080</span><br><span class="line">runmode &#x3D; dev</span><br><span class="line"></span><br><span class="line">copyrequestbody &#x3D; true</span><br><span class="line">sessionon &#x3D; true</span><br><span class="line"></span><br><span class="line">#mysql</span><br><span class="line">db_alias &#x3D; &quot;default&quot;</span><br><span class="line">db_name &#x3D; &quot;xcms&quot;</span><br><span class="line">db_user &#x3D; &quot;&quot; #数据库用户</span><br><span class="line">db_pwd &#x3D; &quot;&quot;  #数据库密码</span><br><span class="line">db_host &#x3D; &quot;&quot; #数据库地址</span><br><span class="line">db_port &#x3D; 3306  #数据库端口</span><br><span class="line">db_charset &#x3D; &quot;utf8&quot;</span><br></pre></td></tr></table></figure>
+<p>consts/Common.go</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package consts</span><br><span class="line"></span><br><span class="line">type JsonResultCode int</span><br><span class="line"></span><br><span class="line">const (</span><br><span class="line">	JRCodeSucc JsonResultCode &#x3D; iota</span><br><span class="line">	JRCodeFailed</span><br><span class="line">	JRCode302 &#x3D; 302 &#x2F;&#x2F;跳转至地址</span><br><span class="line">	JRCode401 &#x3D; 401 &#x2F;&#x2F;未授权访问</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">const (</span><br><span class="line">	Deleted &#x3D; iota - 1</span><br><span class="line">	Disabled</span><br><span class="line">	Enabled</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>main.go</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	_ &quot;github.com&#x2F;ziyoubiancheng&#x2F;xcms&#x2F;routers&quot;</span><br><span class="line">	_ &quot;github.com&#x2F;ziyoubiancheng&#x2F;xcms&#x2F;sysinit&quot;</span><br><span class="line"></span><br><span class="line">	&quot;github.com&#x2F;astaxie&#x2F;beego&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	beego.Run()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>routers/router.go</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">package routers</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;github.com&#x2F;astaxie&#x2F;beego&quot;</span><br><span class="line">	&quot;github.com&#x2F;ziyoubiancheng&#x2F;xcms&#x2F;controllers&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func init() &#123;</span><br><span class="line">	&#x2F;&#x2F;home</span><br><span class="line">	beego.Router(&quot;&#x2F;&quot;, &amp;controllers.HomeController&#123;&#125;, &quot;Get:Index&quot;)</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;menu</span><br><span class="line">	beego.Router(&quot;&#x2F;menu&quot;, &amp;controllers.MenuController&#123;&#125;, &quot;Get:Index&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;menu&#x2F;add&quot;, &amp;controllers.MenuController&#123;&#125;, &quot;Get:Add&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;menu&#x2F;adddo&quot;, &amp;controllers.MenuController&#123;&#125;, &quot;*:AddDo&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;menu&#x2F;edit&quot;, &amp;controllers.MenuController&#123;&#125;, &quot;Get:Edit&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;menu&#x2F;editdo&quot;, &amp;controllers.MenuController&#123;&#125;, &quot;*:EditDo&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;menu&#x2F;deletedo&quot;, &amp;controllers.MenuController&#123;&#125;, &quot;Get:DeleteDo&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;menu&#x2F;list&quot;, &amp;controllers.MenuController&#123;&#125;, &quot;*:List&quot;)</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;user</span><br><span class="line">	beego.Router(&quot;&#x2F;user&quot;, &amp;controllers.UserController&#123;&#125;, &quot;Get:Index&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;user&#x2F;add&quot;, &amp;controllers.UserController&#123;&#125;, &quot;Get:Add&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;user&#x2F;adddo&quot;, &amp;controllers.UserController&#123;&#125;, &quot;*:AddDo&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;user&#x2F;edit&quot;, &amp;controllers.UserController&#123;&#125;, &quot;Get:Edit&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;user&#x2F;editdo&quot;, &amp;controllers.UserController&#123;&#125;, &quot;*:EditDo&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;user&#x2F;deletedo&quot;, &amp;controllers.UserController&#123;&#125;, &quot;Get:DeleteDo&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;user&#x2F;list&quot;, &amp;controllers.UserController&#123;&#125;, &quot;*:List&quot;)</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;login</span><br><span class="line">	beego.Router(&quot;&#x2F;login&quot;, &amp;controllers.LoginController&#123;&#125;, &quot;*:Index&quot;)</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;format</span><br><span class="line">	beego.Router(&quot;&#x2F;format&#x2F;edit&quot;, &amp;controllers.FormatController&#123;&#125;, &quot;Get:Edit&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;format&#x2F;editdo&quot;, &amp;controllers.FormatController&#123;&#125;, &quot;*:EditDo&quot;)</span><br><span class="line"></span><br><span class="line">	beego.Router(&quot;&#x2F;data&#x2F;?:mid&quot;, &amp;controllers.DataController&#123;&#125;, &quot;Get:Index&quot;)</span><br><span class="line">	beego.Router(&quot;&#x2F;data&#x2F;list&#x2F;?:mid&quot;, &amp;controllers.DataController&#123;&#125;, &quot;*:List&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>controllers/BaseController.go</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">package controllers</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;strings&quot;</span><br><span class="line"></span><br><span class="line">	&quot;github.com&#x2F;astaxie&#x2F;beego&quot;</span><br><span class="line">	&quot;github.com&#x2F;ziyoubiancheng&#x2F;xcms&#x2F;consts&quot;</span><br><span class="line">	&quot;github.com&#x2F;ziyoubiancheng&#x2F;xcms&#x2F;models&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">type BaseController struct &#123;</span><br><span class="line">	beego.Controller</span><br><span class="line">	controllerName string</span><br><span class="line">	actionName     string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (c *BaseController) Prepare() &#123;</span><br><span class="line">	&#x2F;&#x2F;附值</span><br><span class="line">	c.controllerName, c.actionName &#x3D; c.GetControllerAndAction()</span><br><span class="line">	beego.Informational(c.controllerName, c.actionName)</span><br><span class="line"></span><br><span class="line">	user :&#x3D; c.auth()</span><br><span class="line">	c.Data[&quot;Menu&quot;] &#x3D; models.MenuTreeStruct(user)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 设置模板</span><br><span class="line">&#x2F;&#x2F; 第一个参数模板，第二个参数为layout</span><br><span class="line">func (c *BaseController) setTpl(template ...string) &#123;</span><br><span class="line">	var tplName string</span><br><span class="line">	layout :&#x3D; &quot;common&#x2F;layout.html&quot;</span><br><span class="line">	switch &#123;</span><br><span class="line">	case len(template) &#x3D;&#x3D; 1:</span><br><span class="line">		tplName &#x3D; template[0]</span><br><span class="line">	case len(template) &#x3D;&#x3D; 2:</span><br><span class="line">		tplName &#x3D; template[0]</span><br><span class="line">		layout &#x3D; template[1]</span><br><span class="line">	default:</span><br><span class="line">		&#x2F;&#x2F;不要&quot;Controller&quot;这个10个字母</span><br><span class="line">		ctrlName :&#x3D; strings.ToLower(c.controllerName[0 : len(c.controllerName)-10])</span><br><span class="line">		actionName :&#x3D; strings.ToLower(c.actionName)</span><br><span class="line">		tplName &#x3D; ctrlName + &quot;&#x2F;&quot; + actionName + &quot;.html&quot;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	_, found :&#x3D; c.Data[&quot;Footer&quot;]</span><br><span class="line">	if !found &#123;</span><br><span class="line">		c.Data[&quot;Footer&quot;] &#x3D; &quot;menu&#x2F;footerjs.html&quot;</span><br><span class="line">	&#125;</span><br><span class="line">	c.Layout &#x3D; layout</span><br><span class="line">	c.TplName &#x3D; tplName</span><br><span class="line">&#125;</span><br><span class="line">func (c *BaseController) jsonResult(code consts.JsonResultCode, msg string, obj interface&#123;&#125;) &#123;</span><br><span class="line">	r :&#x3D; &amp;models.JsonResult&#123;code, msg, obj&#125;</span><br><span class="line">	c.Data[&quot;json&quot;] &#x3D; r</span><br><span class="line">	c.ServeJSON()</span><br><span class="line">	c.StopRun()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (c *BaseController) listJsonResult(code consts.JsonResultCode, msg string, count int64, obj interface&#123;&#125;) &#123;</span><br><span class="line">	r :&#x3D; &amp;models.ListJsonResult&#123;code, msg, count, obj&#125;</span><br><span class="line">	c.Data[&quot;json&quot;] &#x3D; r</span><br><span class="line">	c.ServeJSON()</span><br><span class="line">	c.StopRun()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (c *BaseController) auth() models.UserModel &#123;</span><br><span class="line">	user :&#x3D; c.GetSession(&quot;xcmsuser&quot;)</span><br><span class="line">	if user &#x3D;&#x3D; nil &#123;</span><br><span class="line">		c.Redirect(&quot;&#x2F;login&quot;, 302)</span><br><span class="line">		c.StopRun()</span><br><span class="line">		return models.UserModel&#123;&#125;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		return user.(models.UserModel)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>models/Common.go</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">package models</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;github.com&#x2F;ziyoubiancheng&#x2F;xcms&#x2F;consts&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; JsonResult 用于返回ajax请求的基类</span><br><span class="line">type JsonResult struct &#123;</span><br><span class="line">	Code consts.JsonResultCode &#96;json:&quot;code&quot;&#96;</span><br><span class="line">	Msg  string                &#96;json:&quot;msg&quot;&#96;</span><br><span class="line">	Data interface&#123;&#125;           &#96;json:&quot;data&quot;&#96;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type ListJsonResult struct &#123;</span><br><span class="line">	Code  consts.JsonResultCode &#96;json:&quot;code&quot;&#96;</span><br><span class="line">	Msg   string                &#96;json:&quot;msg&quot;&#96;</span><br><span class="line">	Count int64                 &#96;json:&quot;count&quot;&#96;</span><br><span class="line">	Data  interface&#123;&#125;           &#96;json:&quot;data&quot;&#96;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>static<br>views<br>sysinit/sysinit.go</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package sysinit</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;time&quot;</span><br><span class="line"></span><br><span class="line">	cache &quot;github.com&#x2F;patrickmn&#x2F;go-cache&quot;</span><br><span class="line">	&quot;github.com&#x2F;ziyoubiancheng&#x2F;xcms&#x2F;utils&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func init() &#123;</span><br><span class="line">	&#x2F;&#x2F;init cache</span><br><span class="line">	utils.Cache &#x3D; cache.New(60*time.Minute, 120*time.Minute)</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;init db</span><br><span class="line">	initDB()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>sysinit/initDB.go</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">package sysinit</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;github.com&#x2F;astaxie&#x2F;beego&quot;</span><br><span class="line">	&quot;github.com&#x2F;astaxie&#x2F;beego&#x2F;orm&quot;</span><br><span class="line">	_ &quot;github.com&#x2F;go-sql-driver&#x2F;mysql&quot;</span><br><span class="line">	_ &quot;github.com&#x2F;ziyoubiancheng&#x2F;xcms&#x2F;models&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func initDB() &#123;</span><br><span class="line">	&#x2F;&#x2F;连接名称</span><br><span class="line">	dbAlias :&#x3D; beego.AppConfig.String(&quot;db_alias&quot;)</span><br><span class="line">	&#x2F;&#x2F;数据库名称</span><br><span class="line">	dbName :&#x3D; beego.AppConfig.String(&quot;db_name&quot;)</span><br><span class="line">	&#x2F;&#x2F;数据库连接用户名</span><br><span class="line">	dbUser :&#x3D; beego.AppConfig.String(&quot;db_user&quot;)</span><br><span class="line">	&#x2F;&#x2F;数据库连接用户名</span><br><span class="line">	dbPwd :&#x3D; beego.AppConfig.String(&quot;db_pwd&quot;)</span><br><span class="line">	&#x2F;&#x2F;数据库IP（域名）</span><br><span class="line">	dbHost :&#x3D; beego.AppConfig.String(&quot;db_host&quot;)</span><br><span class="line">	&#x2F;&#x2F;数据库端口</span><br><span class="line">	dbPort :&#x3D; beego.AppConfig.String(&quot;db_port&quot;)</span><br><span class="line">	&#x2F;&#x2F;charset</span><br><span class="line">	dbCharset :&#x3D; beego.AppConfig.String(&quot;db_charset&quot;)</span><br><span class="line"></span><br><span class="line">	orm.RegisterDataBase(dbAlias, &quot;mysql&quot;, dbUser+&quot;:&quot;+dbPwd+&quot;@tcp(&quot;+dbHost+&quot;:&quot;+dbPort+&quot;)&#x2F;&quot;+dbName+&quot;?charset&#x3D;&quot;+dbCharset, 30)</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;如果是开发模式，则显示命令信息</span><br><span class="line">	isDev :&#x3D; (beego.AppConfig.String(&quot;runmode&quot;) &#x3D;&#x3D; &quot;dev&quot;)</span><br><span class="line">	&#x2F;&#x2F;自动建表</span><br><span class="line">	orm.RunSyncdb(&quot;default&quot;, false, isDev)</span><br><span class="line">	if isDev &#123;</span><br><span class="line">		orm.Debug &#x3D; isDev</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>utils/Cache.go</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">package utils</span><br><span class="line"></span><br><span class="line">import cache &quot;github.com&#x2F;patrickmn&#x2F;go-cache&quot;</span><br><span class="line"></span><br><span class="line">var Cache *cache.Cache</span><br></pre></td></tr></table></figure>
+<p>utils/String.go</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">package utils</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;crypto&#x2F;md5&quot;</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;math&#x2F;rand&quot;</span><br><span class="line">	&quot;regexp&quot;</span><br><span class="line">	&quot;time&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">var emailPattern &#x3D; regexp.MustCompile(&quot;[\\w!#$%&amp;&#39;*+&#x2F;&#x3D;?^_&#96;&#123;|&#125;~-]+(?:\\.[\\w!#$%&amp;&#39;*+&#x2F;&#x3D;?^_&#96;&#123;|&#125;~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[a-zA-Z0-9](?:[\\w-]*[\\w])?&quot;)</span><br><span class="line"></span><br><span class="line">func Md5(buf []byte) string &#123;</span><br><span class="line">	hash :&#x3D; md5.New()</span><br><span class="line">	hash.Write(buf)</span><br><span class="line">	return fmt.Sprintf(&quot;%x&quot;, hash.Sum(nil))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func SizeFormat(size float64) string &#123;</span><br><span class="line">	units :&#x3D; []string&#123;&quot;Byte&quot;, &quot;KB&quot;, &quot;MB&quot;, &quot;GB&quot;, &quot;TB&quot;&#125;</span><br><span class="line">	n :&#x3D; 0</span><br><span class="line">	for size &gt; 1024 &#123;</span><br><span class="line">		size &#x2F;&#x3D; 1024</span><br><span class="line">		n +&#x3D; 1</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return fmt.Sprintf(&quot;%.2f %s&quot;, size, units[n])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func IsEmail(b []byte) bool &#123;</span><br><span class="line">	return emailPattern.Match(b)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func Password(len int, pwdO string) (pwd string, salt string) &#123;</span><br><span class="line">	salt &#x3D; GetRandomString(4)</span><br><span class="line">	defaultPwd :&#x3D; &quot;george518&quot;</span><br><span class="line">	if pwdO !&#x3D; &quot;&quot; &#123;</span><br><span class="line">		defaultPwd &#x3D; pwdO</span><br><span class="line">	&#125;</span><br><span class="line">	pwd &#x3D; Md5([]byte(defaultPwd + salt))</span><br><span class="line">	return pwd, salt</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;生成随机字符串</span><br><span class="line">func GetRandomString(lens int) string &#123;</span><br><span class="line">	str :&#x3D; &quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;</span><br><span class="line">	bytes :&#x3D; []byte(str)</span><br><span class="line">	result :&#x3D; []byte&#123;&#125;</span><br><span class="line">	r :&#x3D; rand.New(rand.NewSource(time.Now().UnixNano()))</span><br><span class="line">	for i :&#x3D; 0; i &lt; lens; i++ &#123;</span><br><span class="line">		result &#x3D; append(result, bytes[r.Intn(len(bytes))])</span><br><span class="line">	&#125;</span><br><span class="line">	return string(result)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+        </article>
+        <div class="comment-section">
+  
+    
+
+    <!-- 多说评论框 start -->
+      <div class="ds-thread" data-thread-key="xcms/index.md" data-title="XCMS源码浅析" data-url="http://ziyoubiancheng.com/xcms/index.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+      <script type="text/javascript">
+      var duoshuoQuery = {short_name:"wayouliu"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+  
+
+
+</div>
+    </div>
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle" target="_blank" rel="noopener">gstyle</a>主题</p>
+    <p>
+        &copy; 2024 自由编程
+    </p>
+    <p>
+        <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener">京ICP备19032493号-1</a>
+    </p>
+</footer>
+
+<script src="/lib/jquery.js"></script>
+
+
+<script src="/lib/waves.js"></script>
+
+
+<script src="/lib/jquery-ui.js"></script>
+
+
+<script src="/lib/jquery.tocify.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+    </body>
+</html>
